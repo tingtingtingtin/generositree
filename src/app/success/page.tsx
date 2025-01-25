@@ -1,15 +1,6 @@
-"use client";
-
-import { useEffect } from "react";
+import Link from "next/link";
 
 export default function Success() {
-  useEffect(() => {
-    // Optional: You can use setTimeout to redirect after a few seconds
-    // setTimeout(() => {
-    //   window.location.href = "/";
-    // }, 3000);
-  }, []);
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-green-100 p-6">
       <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-md">
@@ -18,9 +9,9 @@ export default function Success() {
           Your tree has been successfully planted!
         </p>
         <div className="mt-6 text-center">
-          <a href="/" className="text-blue-500 hover:underline">
+          <Link href="/plant" className="text-blue-500 hover:underline">
             Plant another tree
-          </a>
+          </Link>
         </div>
       </div>
     </div>
