@@ -1,79 +1,103 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // For navigation in a client component
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/utils/firebase"; // Ensure this is your Firebase configuration file
 import Header from "@/components/Header";
 
-const TREES = {
-  tree1: {
-    caption: "Example caption",
-    donationIds: "gggg",
-    imageId: "https://picsum.photos/200",
-    timePlanted: new Date(),
-    userId: "example",
-  },
-  tree2: {
-    caption: "Second tree caption",
-    donationIds: "hhhh",
-    imageId: "https://picsum.photos/201",
-    timePlanted: new Date(),
-    userId: "example2",
-  },
-  tree3: {
-    caption: "Third tree caption",
-    donationIds: "iiii",
-    imageId: "https://picsum.photos/202",
-    timePlanted: new Date(),
-    userId: "example3",
-  },
-};
-
 const Explore = () => {
-  const [trees, setTrees] = useState(TREES);
+  const [trees, setTrees] = useState<{ [key: string]: any }>({});
+  const [activeTree, setActiveTree] = useState<string | null>(null);
+  const [fade, setFade] = useState(false);
   const router = useRouter();
 
+  // Fetch trees collection from Firestore
+  useEffect(() => {
+    const fetchTrees = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "trees"));
+        const treesData: { [key: string]: any } = {};
+        querySnapshot.forEach((doc) => {
+          treesData[doc.id] = doc.data();
+        });
+        setTrees(treesData);
+      } catch (error) {
+        console.error("Error fetching trees:", error);
+      }
+    };
+
+    fetchTrees();
+  }, []);
+
+  const handleTreeClick = (id: string) => {
+    setActiveTree(id);
+    setTrees(
+      Object.fromEntries(
+        Object.entries(trees).filter(([treeId]) => treeId === id)
+      )
+    );
+    setTimeout(() => {
+      setFade(true);
+    }, 500);
+    setTimeout(() => {
+      router.push(`/explore/${id}`);
+    }, 700);
+  };
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-green-700 relative">
       <Header />
-      <div className="h-full bg-green-700 relative">
-        {Object.entries(trees).map(([id, tree]) => {
-          const randomX = 40 + Math.random() * 30; // Restricting X to 40% - 70%
-          const randomY = 40 + Math.random() * 30; // Restricting Y to 40% - 70%
+      {fade ? (
+        <motion.div
+          className="h-full w-full bg-blue-300"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        />
+      ) : (
+        Object.entries(trees).map(([id, tree]) => {
+          const randomX = 20 + Math.random() * 60;
+          const randomY = 20 + Math.random() * 60;
 
           return (
-            <div
+            <motion.div
               key={id}
+              initial={{ scale: 1 }}
+              animate={
+                activeTree === id
+                  ? { scale: 10, zIndex: 100, top: "50%", left: "50%" }
+                  : { scale: 1 }
+              }
+              transition={{ duration: 1 }}
               style={{
                 position: "absolute",
                 top: `${randomY}%`,
                 left: `${randomX}%`,
-                width: "20px",
-                height: "20px",
-                backgroundColor: "darkgreen",
+                width: "40px",
+                height: "40px",
+                backgroundColor: "#003300",
                 borderRadius: "50%",
                 cursor: "pointer",
               }}
-              onClick={() => router.push(`/explore/${id}`)}
-            />
+              onClick={() => handleTreeClick(id)}
+            >
+              <div
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  backgroundColor: "#005e00",
+                  borderRadius: "50%",
+                  margin: "auto",
+                  position: "relative",
+                  top: "10px",
+                }}
+              />
+            </motion.div>
           );
-        })}
-        <button
-          onClick={() => setTrees({ ...TREES })}
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            padding: "10px 20px",
-            backgroundColor: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Click Me
-        </button>
-      </div>
+        })
+      )}
     </div>
   );
 };
