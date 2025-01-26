@@ -7,6 +7,7 @@ import { Canvas } from "@react-three/fiber";
 import { db } from "@/utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Header from "@/components/Header";
+import Link from "next/link";
 
 const TreeModel = ({ onClick }: { onClick: () => void }) => (
   <mesh>
@@ -50,10 +51,14 @@ const TreeDetails = () => {
     imageId: string;
     caption: string;
     userId: string;
+    donations?: Array<string>;
   } | null>(null);
   const [userName, setUserName] = useState("");
   const [showImage, setShowImage] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [donations, setDonations] = useState<
+    { amount: number; donorName: string; message: string }[]
+  >([]);
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "Invalid Date";
@@ -90,6 +95,37 @@ const TreeDetails = () => {
     };
     fetchTreeData();
   }, [treeId]);
+
+  useEffect(() => {
+    const fetchDonations = async () => {
+      if (tree?.donations) {
+        try {
+          const donationPromises = tree.donations.map((id) =>
+            getDoc(doc(db, "donations", id))
+          );
+          const donationSnapshots = await Promise.all(donationPromises);
+
+          const fetchedDonations = donationSnapshots
+            .filter((snap) => snap.exists())
+            .map((snap) => snap.data());
+
+          setDonations(
+            fetchedDonations.map((donation) => ({
+              amount: donation.amount,
+              donorName: donation.donorName || "Anonymous",
+              message: donation.message || "",
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching donations:", error);
+        }
+      }
+    };
+
+    if (showImage) {
+      fetchDonations();
+    }
+  }, [showImage, tree]);
 
   if (loading) {
     return (
@@ -148,6 +184,27 @@ const TreeDetails = () => {
                 <h2 className="m-auto mt-2 font-bold">{userName}</h2>
                 <p className="m-auto mt-2">{tree.caption}</p>
                 <h3 className="m-auto mt-2">{formatDate(tree.timePlanted)}</h3>
+              </div>
+              <Link
+                href={`/donate/${treeId}`}
+                className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition duration-300"
+              >
+                Donate to this cause
+              </Link>
+              <div className="mt-6 p-4 bg-white rounded-md">
+                <h3 className="m-auto text-center font-bold text-lg mb-2">
+                  Donations
+                </h3>
+                {donations.map((donation, index) => (
+                  <div
+                    key={index}
+                    className="border-b border-gray-300 pb-2 mb-2"
+                  >
+                    <p className="font-bold">{donation.donorName}</p>
+                    <p>${donation.amount.toFixed(2)}</p>
+                    <p>{donation.message}</p>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>
