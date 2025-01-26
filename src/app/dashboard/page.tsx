@@ -95,13 +95,14 @@ const Dashboard = () => {
                   }
 
                   console.log("Logged out successfully");
+                  localStorage.removeItem("userId");
                   router.push("/");
                   // Redirect to login page or home page after successful logout
                 } catch (error: any) {
                   console.error("Logout failed:", error.message);
                 }
               }}
-              className="absolute top-4 right-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300"
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
             >
               Log Out
             </button>

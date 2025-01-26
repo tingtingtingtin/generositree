@@ -1,11 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { db } from "@/utils/firebase";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 const SignupPage: React.FC = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -26,9 +31,17 @@ const SignupPage: React.FC = () => {
       }
 
       const data = await response.json();
+      const userId = data.user.uid;
+      const emailId = data.user.email as string;
+      await setDoc(doc(collection(db, "users"), userId), {
+        name: name,
+        email: emailId,
+        treeIds: [],
+      });
       console.log(data.message);
       setEmail("");
       setPassword("");
+      router.push("/login");
     } catch (error: any) {
       setError(error.message);
     }
@@ -40,6 +53,23 @@ const SignupPage: React.FC = () => {
           Sign Up
         </h1>
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Name:
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your Name"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
           <div className="mb-4">
             <label
               htmlFor="email"
