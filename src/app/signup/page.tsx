@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/utils/firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
+import Header from "@/components/Header";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState("");
@@ -47,8 +48,9 @@ const SignupPage: React.FC = () => {
     }
   };
   return (
-    <div className="w-full h-screen bg-green-200 flex items-center justify-center">
-      <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-lg">
+    <div className="w-full h-screen bg-green-200 flex flex-col items-center justify-between">
+      <Header className="w-full text-black bg-white drop-shadow-md" />
+      <div className="w-full mb-16 items-center justify-center max-w-sm bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
           Sign Up
         </h1>

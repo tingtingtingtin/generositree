@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -37,8 +38,9 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-screen bg-green-200 flex items-center justify-center">
-      <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-lg">
+    <div className="w-full h-screen bg-green-200 flex flex-col items-center justify-between">
+      <Header className="w-full text-black bg-white drop-shadow-md" />
+      <div className="w-full flex flex-col mb-24 max-w-sm bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
           Log In
         </h1>

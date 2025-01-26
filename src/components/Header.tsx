@@ -16,7 +16,9 @@ export default function Header({ className }: { className: string }) {
   }, []);
 
   return (
-    <header className={`${className} flex items-center justify-between p-4`}>
+    <header
+      className={`drop-shadow-sm ${className} flex items-center justify-between p-4`}
+    >
       {/* Left Button */}
       <Link href="/">Home</Link>
 

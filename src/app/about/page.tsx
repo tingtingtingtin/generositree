@@ -10,7 +10,7 @@ const About: NextPage = () => {
           About Us
         </h1>
         <p className="text-lg text-gray-800 mb-4">
-          At <strong>Your App Name</strong>, we believe in the power of small
+          At <strong>GenerosiTree</strong>, we believe in the power of small
           actions to create big change. Our mission is simple: to inspire and
           empower individuals to take meaningful actions toward environmental
           sustainability.

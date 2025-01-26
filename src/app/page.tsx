@@ -20,7 +20,7 @@ const Home = () => {
         {/* Content on top of the video */}
         <div className=" relative text-center z-10 flex flex-col m-auto h-full justify-center align-center">
           <h1 className="mb-4 text-4xl font-bold text-gray-200">
-            Welcome to Tree Planting
+            Welcome to GenerosiTree
           </h1>
           <p className="mb-6 text-lg text-gray-400">
             Join us in making a positive impact on the environment by planting
