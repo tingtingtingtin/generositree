@@ -28,12 +28,12 @@ const Home = () => {
           </p>
           <div className="flex flex-row align-center justify-center gap-6">
             <Link href="/plant">
-              <button className="rounded w-40 bg-green-500 py-2 px-4 text-white hover:bg-green-600">
+              <button className="rounded-lg w-40 bg-green-500 py-2 px-4 text-white hover:text-gray-200 hover:bg-green-600">
                 Start Planting
               </button>
             </Link>
             <Link href="/explore">
-              <button className="rounded w-40 bg-green-500 py-2 px-4 text-white hover:bg-green-600">
+              <button className="rounded-lg w-40 bg-green-500 py-2 px-4 text-white hover:text-gray-200 hover:bg-green-600">
                 Explore
               </button>
             </Link>
