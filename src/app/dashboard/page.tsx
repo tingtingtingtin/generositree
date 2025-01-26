@@ -95,6 +95,7 @@ const Dashboard = () => {
                   }
 
                   console.log("Logged out successfully");
+                  localStorage.removeItem("userId");
                   router.push("/");
                   // Redirect to login page or home page after successful logout
                 } catch (error: any) {
