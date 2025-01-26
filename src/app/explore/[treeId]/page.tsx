@@ -174,6 +174,7 @@ const TreeDetails = () => {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
+              className="flex flex-col"
             >
               <div className="bg-white shadow-black shadow-md w-72 p-4 pb-10 flex flex-col align-center justify-center">
                 <img
@@ -187,11 +188,11 @@ const TreeDetails = () => {
               </div>
               <Link
                 href={`/donate/${treeId}`}
-                className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition duration-300"
+                className="mt-2 px-4 py-2 bg-green-500 m-auto text-white rounded hover:bg-green-700 transition duration-300"
               >
-                Donate to this cause
+                Support a tree-planting cause
               </Link>
-              <div className="mt-6 p-4 bg-white rounded-md">
+              <div className="mt-6 p-4 bg-white rounded-md overflow-y-auto">
                 <h3 className="m-auto text-center font-bold text-lg mb-2">
                   Donations
                 </h3>

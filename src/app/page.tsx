@@ -16,7 +16,7 @@ const Home = () => {
       </video>
 
       <div className="bg-black bg-opacity-20 relative flex flex-col z-10 h-full">
-        <Header />
+        <Header className="text-white" />
         {/* Content on top of the video */}
         <div className=" relative text-center z-10 flex flex-col m-auto h-full justify-center align-center">
           <h1 className="mb-4 text-4xl font-bold text-gray-200">

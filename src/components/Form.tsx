@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { db, storage } from "@/utils/firebase";
@@ -13,7 +13,12 @@ export default function TreePlantingForm() {
   const [caption, setCaption] = useState("");
   const [donation, setDonation] = useState("");
   const router = useRouter();
-  const userId = localStorage.getItem("userId");
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      router.push("/login");
+    }
+  });
 
   const handleNext = () => setPage((prev) => prev + 1);
   const handleBack = () => setPage((prev) => prev - 1);

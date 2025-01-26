@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 export default function Success() {
   return (
     <div className="flex flex-col h-screen">
-      <Header />
+      <Header className="text-black" />
       <div className="flex h-full items-center justify-center bg-green-100 p-6">
         <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-md">
           <h1 className="mb-4 text-2xl font-bold text-gray-800">Success!</h1>
