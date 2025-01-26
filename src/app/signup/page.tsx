@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -29,6 +31,7 @@ const SignupPage: React.FC = () => {
       console.log(data.message);
       setEmail("");
       setPassword("");
+      router.push("/login");
     } catch (error: any) {
       setError(error.message);
     }
