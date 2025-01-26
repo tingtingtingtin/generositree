@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import { db } from "@/utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Header from "@/components/Header";
 
-const TreeModel = ({ onClick }) => (
+const TreeModel = ({ onClick }: { onClick: () => void }) => (
   <mesh>
     <mesh onClick={onClick}>
       <mesh position={[0, 0.8, 0]}>

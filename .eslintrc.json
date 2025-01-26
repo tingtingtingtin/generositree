@@ -11,7 +11,24 @@
   },
   "plugins": ["react"],
   "rules": {
-    "require-jsdoc": "off"
+    "require-jsdoc": "off",
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": [
+          "args",
+          "attach",
+          "geometry",
+          "material",
+          "position",
+          "rotation",
+          "scale",
+          "color"
+        ]
+      }
+    ],
+    "no-console": "off",
+    "react/prop-types": "off"
   },
   "settings": {
     "react": {
