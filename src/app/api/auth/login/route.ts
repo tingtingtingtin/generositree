@@ -1,3 +1,4 @@
+import { serialize } from "cookie";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import type { LoginResponse, ErrorResponse } from "@/app/types";
@@ -11,9 +12,15 @@ export async function POST(request: Request): Promise<Response> {
       password
     );
 
-    // Optionally, send a token
     const user = userCredential.user;
     const token = await user.getIdToken();
+
+    const cookie = serialize("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
 
     const response: LoginResponse = {
       message: "Login successful",
@@ -24,7 +31,10 @@ export async function POST(request: Request): Promise<Response> {
       },
     };
 
-    return new Response(JSON.stringify(response), { status: 200 });
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { "Set-Cookie": cookie },
+    });
   } catch (error: any) {
     const errorResponse: ErrorResponse = { error: error.message };
     return new Response(JSON.stringify(errorResponse), { status: 400 });
