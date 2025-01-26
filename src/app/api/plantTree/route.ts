@@ -11,9 +11,9 @@ export async function POST(request: Request) {
   }
 
   const DIGITAL_HUMANI_API_URL = "https://api.sandbox.digitalhumani.com/tree";
-  const ENTERPRISE_ID = process.env.DIGITALHUMANI_ENTERPRISE_ID!;
-  const PROJECT_ID = process.env.DIGITALHUMANI_PROJECT_ID!;
-  const API_KEY = process.env.DIGITALHUMANI_API_KEY!;
+  const ENTERPRISE_ID = process.env.NEXT_PUBLIC_DIGITALHUMANI_ENTERPRISE_ID!;
+  const PROJECT_ID = process.env.NEXT_PUBLIC_DIGITALHUMANI_PROJECT_ID!;
+  const API_KEY = process.env.NEXT_PUBLIC_DIGITALHUMANI_API_KEY!;
 
   try {
     const response = await fetch(DIGITAL_HUMANI_API_URL, {
