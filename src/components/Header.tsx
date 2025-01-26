@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function Header() {
-  const isAuthenticated = true;
+  const isAuthenticated = false;
   return (
     <header className="flex items-center justify-between p-4 bg-green-600 text-white">
       {/* Left Button */}
@@ -28,8 +28,8 @@ export default function Header() {
             <button className="hover:text-gray-200">Logout</button>
           </>
         ) : (
-          <Link href="/signup" className="hover:text-gray-200">
-            Sign Up
+          <Link href="/login" className="hover:text-gray-200">
+            Log In
           </Link>
         )}
       </div>

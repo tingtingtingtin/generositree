@@ -26,13 +26,18 @@ const fetchUserData = async (userId: string): Promise<UserData | null> => {
 const Dashboard = () => {
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
-
   useEffect(() => {
-    fetchUserData("example").then((fetchedUserData) => {
-      if (fetchedUserData) {
-        setUserData(fetchedUserData);
-      }
-    });
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      fetchUserData(userId).then((fetchedUserData) => {
+        if (fetchedUserData) {
+          setUserData(fetchedUserData);
+        }
+      });
+    } else {
+      console.log("No user ID found in local storage");
+      router.push("/login");
+    }
   }, []);
 
   return (
@@ -75,10 +80,30 @@ const Dashboard = () => {
               Plant More Trees
             </button>
             <button
-              onClick={() => router.push("/account")}
-              className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600"
+              onClick={async () => {
+                try {
+                  const response = await fetch("/api/auth/logout", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  });
+
+                  if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error);
+                  }
+
+                  console.log("Logged out successfully");
+                  router.push("/");
+                  // Redirect to login page or home page after successful logout
+                } catch (error: any) {
+                  console.error("Logout failed:", error.message);
+                }
+              }}
+              className="absolute top-4 right-4 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300"
             >
-              Edit Account
+              Log Out
             </button>
           </div>
         </div>
