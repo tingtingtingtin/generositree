@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,7 +17,7 @@ const TreeModel = ({ onClick }: { onClick: () => void }) => (
           <planeGeometry args={[0.5, 0.5]} />
           <meshStandardMaterial color="white" />
         </mesh>
-        <mesh position={[0.2, 0, 0.5]} rotation={[0, Math.PI / 6, 0]}>
+        <mesh position={[0.2, 0, 0.6]} rotation={[0, Math.PI / 6, 0]}>
           <planeGeometry args={[0.4, 0.3]} />
           <meshStandardMaterial color="black" />
         </mesh>
@@ -34,6 +33,10 @@ const TreeModel = ({ onClick }: { onClick: () => void }) => (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, -1]}>
       <circleGeometry args={[30, 30]} />
       <meshBasicMaterial color="#15803d" />
+    </mesh>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.2, -2, 0]}>
+      <circleGeometry args={[0.8, 32]} />
+      <meshBasicMaterial color="black" opacity={0.3} transparent />
     </mesh>
   </mesh>
 );
@@ -62,7 +65,6 @@ const TreeDetails = () => {
   useEffect(() => {
     const fetchTreeData = async () => {
       try {
-        // Fetch tree data
         const treeRef = doc(db, "trees", treeId);
         const treeSnapshot = await getDoc(treeRef);
 
@@ -104,9 +106,9 @@ const TreeDetails = () => {
   return (
     <div className="w-full h-screen bg-blue-300 flex flex-col justify-center">
       <Header className="fixed top-0 left-0 w-full z-10" />
-      <div className="h-full pt-16 w-full">
+      <div className="h-full w-full">
         {tree && (
-          <>
+          <div className="flex flex-col h-full">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -117,7 +119,7 @@ const TreeDetails = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
-              className="h-full w-full"
+              className="h-full w-full overflow-hidden"
             >
               <Canvas>
                 <ambientLight intensity={0.7} />
@@ -125,7 +127,7 @@ const TreeDetails = () => {
                 <TreeModel onClick={handleTreeClick} />
               </Canvas>
             </motion.div>
-          </>
+          </div>
         )}
         {showImage && tree && (
           <div
@@ -137,13 +139,13 @@ const TreeDetails = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="bg-white shadow-black shadow-md w-72 p-1 pb-20 pt-5 flex flex-col align-center justify-center">
-                <h2 className="m-auto mt-2 font-bold">{userName}</h2>
+              <div className="bg-white shadow-black shadow-md w-72 p-4 pb-10 flex flex-col align-center justify-center">
                 <img
                   src={tree.imageId}
-                  alt="Tree"
-                  className="max-w-[80%] max-h-[80%] m-auto rounded-sm"
+                  alt="Tree Image"
+                  className="max-w-[100%] max-h-[100%] m-auto rounded-sm"
                 />
+                <h2 className="m-auto mt-2 font-bold">{userName}</h2>
                 <p className="m-auto mt-2">{tree.caption}</p>
                 <h3 className="m-auto mt-2">{formatDate(tree.timePlanted)}</h3>
               </div>
