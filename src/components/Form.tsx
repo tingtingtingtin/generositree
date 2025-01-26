@@ -13,6 +13,7 @@ export default function TreePlantingForm() {
   const [caption, setCaption] = useState("");
   const [donation, setDonation] = useState("");
   const router = useRouter();
+  const userId = localStorage.getItem("userId");
 
   const handleNext = () => setPage((prev) => prev + 1);
   const handleBack = () => setPage((prev) => prev - 1);
@@ -48,12 +49,12 @@ export default function TreePlantingForm() {
             timePlanted: new Date(),
             imageId: photoURL,
             caption,
-            userId: "example", // Replace with actual user ID
+            userId: userId, // Replace with actual user ID
           };
           await setDoc(newTreeRef, treeData);
 
           // Step 4: Update the user's document to include the treeId
-          const userRef = doc(db, "users", "example"); // Replace with actual user ID
+          const userRef = doc(db, "users", userId); // Replace with actual user ID
           await updateDoc(userRef, {
             treeIds: arrayUnion(newTreeRef.id),
           });
