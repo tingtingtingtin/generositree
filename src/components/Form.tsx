@@ -89,7 +89,7 @@ export default function TreePlantingForm() {
                 Donation Amount
               </h1>
               <label className="mb-2 block text-sm font-medium text-gray-700">
-                You don't have to donate to plant a virtual tree, but your
+                You don&apos;t have to donate to plant a virtual tree, but your
                 contribution is appreciated!
               </label>
               <input

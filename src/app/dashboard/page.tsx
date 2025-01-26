@@ -3,20 +3,20 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/utils/firebase"; // Make sure to configure Firebase in this file
 
-const JOHN = {
-  name: "John Doe",
-  email: "john.doe@example.com",
-  treeIds: [],
-};
+interface UserData {
+  name: string;
+  email: string;
+  treeIds: string[];
+}
 
-const fetchUserData = async (userId: string) => {
+const fetchUserData = async (userId: string): Promise<UserData | null> => {
   const userDoc = doc(db, "users", userId);
   const userSnapshot = await getDoc(userDoc);
   if (userSnapshot.exists()) {
-    return userSnapshot.data();
+    return userSnapshot.data() as UserData;
   } else {
     console.log("No such document!");
     return null;
@@ -25,14 +25,12 @@ const fetchUserData = async (userId: string) => {
 
 const Dashboard = () => {
   const router = useRouter();
-  const [userData, setUserData] = useState(JOHN);
-  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
     fetchUserData("example").then((fetchedUserData) => {
       if (fetchedUserData) {
         setUserData(fetchedUserData);
-        setLoading(false);
       }
     });
   }, []);
@@ -51,7 +49,7 @@ const Dashboard = () => {
             <h3 className="text-xl font-semibold text-gray-700">
               User Information
             </h3>
-            {loading ? (
+            {!userData ? (
               <h2 className="text-center">Loading...</h2>
             ) : (
               <div className="mt-4">
