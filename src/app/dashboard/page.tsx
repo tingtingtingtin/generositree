@@ -1,25 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/utils/firebase"; // Make sure to configure Firebase in this file
+
+interface UserData {
+  name: string;
+  email: string;
+  treeIds: string[];
+}
+
+const fetchUserData = async (userId: string): Promise<UserData | null> => {
+  const userDoc = doc(db, "users", userId);
+  const userSnapshot = await getDoc(userDoc);
+  if (userSnapshot.exists()) {
+    return userSnapshot.data() as UserData;
+  } else {
+    console.log("No such document!");
+    return null;
+  }
+};
 
 const Dashboard = () => {
-  const [userData, setUserData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    treesPlanted: 5,
-  });
-
   const router = useRouter();
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
-    // You can replace this with a real API call to fetch user data
-    // Example: setUserData(fetchedUserData);
+    fetchUserData("example").then((fetchedUserData) => {
+      if (fetchedUserData) {
+        setUserData(fetchedUserData);
+      }
+    });
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-green-100 overflow-hidden">
+    <div className="flex flex-col relative min-h-screen w-full bg-green-100 overflow-hidden">
       <Header />
 
       {/* Dashboard Content */}
@@ -32,17 +49,21 @@ const Dashboard = () => {
             <h3 className="text-xl font-semibold text-gray-700">
               User Information
             </h3>
-            <div className="mt-4">
-              <p className="text-lg text-gray-600">
-                <strong>Name:</strong> {userData.name}
-              </p>
-              <p className="text-lg text-gray-600">
-                <strong>Email:</strong> {userData.email}
-              </p>
-              <p className="text-lg text-gray-600">
-                <strong>Trees Planted:</strong> {userData.treesPlanted}
-              </p>
-            </div>
+            {!userData ? (
+              <h2 className="text-center">Loading...</h2>
+            ) : (
+              <div className="mt-4">
+                <p className="text-lg text-gray-600">
+                  <strong>Name:</strong> {userData.name}
+                </p>
+                <p className="text-lg text-gray-600">
+                  <strong>Email:</strong> {userData.email}
+                </p>
+                <p className="text-lg text-gray-600">
+                  <strong>Trees Planted:</strong> {userData.treeIds.length}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Action Button Section */}
