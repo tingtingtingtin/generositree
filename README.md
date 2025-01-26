@@ -8,6 +8,9 @@
 ![Prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 
+![image](https://github.com/user-attachments/assets/f03c5a9a-cdc5-406e-b054-a61b337fc1c2)
+
+
 ## Inspiration
 We wanted to share our love for nature with other people, so we used our technical skills to come up with GenerosiTree. Our goal is to create a platform that not only inspires others to appreciate the environment but also encourages real-world action through tree planting and conservation efforts. By combining technology and nature, we hope to make sustainability more accessible and engaging for everyone.
 
