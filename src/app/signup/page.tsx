@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { db } from "@/utils/firebase";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -28,6 +30,12 @@ const SignupPage: React.FC = () => {
       }
 
       const data = await response.json();
+      const userId = data.user.uid;
+      const emailId = data.user.email as string;
+      await setDoc(doc(collection(db, "users"), userId), {
+        email: emailId,
+        treeIds: [],
+      });
       console.log(data.message);
       setEmail("");
       setPassword("");
