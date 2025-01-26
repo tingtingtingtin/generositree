@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { db, storage } from "@/utils/firebase";
+import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 export default function TreePlantingForm() {
   const [page, setPage] = useState(1); // Tracks the current page
@@ -21,9 +24,48 @@ export default function TreePlantingForm() {
   };
 
   const handleSubmit = async () => {
-    // Form submission logic here
-    console.log({ photo, caption, donation });
-    router.push("/success");
+    try {
+      if (!photo) throw new Error("No photo somehow");
+      // Step 1: Upload the photo to Firebase Storage
+      const storageRef = ref(storage, `images/${photo.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, photo);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // You can track progress here
+        },
+        (error) => {
+          console.error("Error uploading image:", error);
+        },
+        async () => {
+          // Step 2: Get the download URL after the upload is complete
+          const photoURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+          // Step 3: Add the new tree document to the trees collection
+          const newTreeRef = doc(db, "trees", `${Date.now()}`); // You can use timestamp or other unique IDs
+          const treeData = {
+            timePlanted: new Date(),
+            imageId: photoURL,
+            caption,
+            userId: "example", // Replace with actual user ID
+          };
+          await setDoc(newTreeRef, treeData);
+
+          // Step 4: Update the user's document to include the treeId
+          const userRef = doc(db, "users", "example"); // Replace with actual user ID
+          await updateDoc(userRef, {
+            treeIds: arrayUnion(newTreeRef.id),
+          });
+
+          // Step 5: Redirect or show success message
+          router.push("/success"); // Or any other route
+        }
+      );
+    } catch (error) {
+      console.error("Error submitting tree data:", error);
+      alert("Error submitting tree data.");
+    }
   };
 
   const progress = (page / 3) * 100; // Calculate progress bar width
