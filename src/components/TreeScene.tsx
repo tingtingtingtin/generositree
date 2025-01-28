@@ -1,5 +1,5 @@
-// @ts-ignore
 import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 
 const TreeModel = ({ onClick }: { onClick: () => void }) => (
   <mesh>
@@ -43,6 +43,7 @@ const TreeScene: React.FC<TreeSceneProps> = ({ handleTreeClick }) => (
     <ambientLight intensity={0.7} />
     <directionalLight position={[10, 4, 5]} intensity={1} />
     <TreeModel onClick={handleTreeClick} />
+    {/* <OrbitControls /> */}
   </Canvas>
 );
 

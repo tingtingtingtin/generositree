@@ -9,7 +9,7 @@ import Header from "@/components/Header";
 
 const Explore = () => {
   const [trees, setTrees] = useState<{ [key: string]: any }>({});
-  const [activeTree, setActiveTree] = useState<string | null>(null);
+  // const [activeTree, setActiveTree] = useState<string | null>(null);
   const [fade, setFade] = useState(false);
   const router = useRouter();
 
@@ -31,18 +31,13 @@ const Explore = () => {
   }, []);
 
   const handleTreeClick = (id: string) => {
-    setActiveTree(id);
-    setTrees(
-      Object.fromEntries(
-        Object.entries(trees).filter(([treeId]) => treeId === id)
-      )
-    );
-    setTimeout(() => {
-      setFade(true);
-    }, 500);
+    // setActiveTree(id);
+    // setTimeout(() => {
+    setFade(true);
+    // }, 0);
     setTimeout(() => {
       router.push(`/explore/${id}`);
-    }, 700);
+    }, 500);
   };
 
   return (
@@ -50,9 +45,9 @@ const Explore = () => {
       <Header className="text-white bg-blue-300 shadow-lg shadow-blue-300" />
       {fade ? (
         <motion.div
-          className="h-full w-full bg-blue-300"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="h-full w-full bg-blue-300 shadow-lg shadow-blue-300"
+          initial={{ height: "0vh" }}
+          animate={{ height: "100vh" }}
           transition={{ duration: 0.5 }}
         />
       ) : (
@@ -64,11 +59,6 @@ const Explore = () => {
             <motion.div
               key={id}
               initial={{ scale: 1 }}
-              animate={
-                activeTree === id
-                  ? { scale: 10, zIndex: 100, top: "50%", left: "50%" }
-                  : { scale: 1 }
-              }
               transition={{ duration: 1 }}
               onClick={() => handleTreeClick(id)}
               style={{

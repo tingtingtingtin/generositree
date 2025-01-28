@@ -105,8 +105,8 @@ const TreeDetails = () => {
       <div className="h-full w-full">
         <div className="flex flex-col h-full">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ height: "0vh", y: "100vh" }}
+            animate={{ height: "100vh", y: "0vh" }}
             transition={{ duration: 1 }}
             className="h-full w-full overflow-hidden"
           >
