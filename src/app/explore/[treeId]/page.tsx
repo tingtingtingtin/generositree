@@ -3,69 +3,33 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Canvas } from "@react-three/fiber";
 import { db } from "@/utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Header from "@/components/Header";
 import Link from "next/link";
+import TreeScene from "@/components/TreeScene";
+import { formatDate } from "@/utils/util";
 
-const TreeModel = ({ onClick }: { onClick: () => void }) => (
-  <mesh>
-    <mesh onClick={onClick}>
-      <mesh position={[0, 0.8, 0]}>
-        <coneGeometry args={[0.9, 2, 32]} />
-        <mesh position={[0.2, 0, 0.5]} rotation={[0, Math.PI / 6, 0]}>
-          <planeGeometry args={[0.5, 0.5]} />
-          <meshStandardMaterial color="white" />
-        </mesh>
-        <mesh position={[0.2, 0, 0.6]} rotation={[0, Math.PI / 6, 0]}>
-          <planeGeometry args={[0.4, 0.3]} />
-          <meshStandardMaterial color="black" />
-        </mesh>
-        <meshStandardMaterial color="green" />
-      </mesh>
-      <coneGeometry args={[1, 2, 32]} />
-      <meshStandardMaterial color="green" />
-      <mesh position={[0, -1, 0]}>
-        <cylinderGeometry args={[0.2, 0.2, 2, 32]} />
-        <meshStandardMaterial color="brown" />
-      </mesh>
-    </mesh>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, -1]}>
-      <circleGeometry args={[30, 30]} />
-      <meshBasicMaterial color="#15803d" />
-    </mesh>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.2, -2, 0]}>
-      <circleGeometry args={[0.8, 32]} />
-      <meshBasicMaterial color="black" opacity={0.3} transparent />
-    </mesh>
-  </mesh>
-);
+interface Tree {
+  timePlanted: number;
+  imageId: string;
+  caption: string;
+  userId: string;
+  donations?: string[];
+}
 
 const TreeDetails = () => {
   const params = useParams();
-  const treeId = params.treeId;
+  const treeId = params.treeId as string;
 
-  const [tree, setTree] = useState<{
-    timePlanted: number;
-    imageId: string;
-    caption: string;
-    userId: string;
-    donations?: Array<string>;
-  } | null>(null);
+  const [tree, setTree] = useState<Tree | null>(null);
   const [userName, setUserName] = useState("");
   const [showImage, setShowImage] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [donationLoading, setDonationLoading] = useState(true);
   const [donations, setDonations] = useState<
     { amount: number; donorName: string; message: string }[]
   >([]);
-
-  const formatDate = (timestamp) => {
-    if (!timestamp) return "Invalid Date";
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return date.toLocaleDateString(undefined, options);
-  };
 
   useEffect(() => {
     const fetchTreeData = async () => {
@@ -74,10 +38,9 @@ const TreeDetails = () => {
         const treeSnapshot = await getDoc(treeRef);
 
         if (treeSnapshot.exists()) {
-          const treeData = treeSnapshot.data();
+          const treeData = treeSnapshot.data() as Tree;
           setTree(treeData);
 
-          // Fetch user data
           const userRef = doc(db, "users", treeData.userId);
           const userSnapshot = await getDoc(userRef);
 
@@ -90,7 +53,7 @@ const TreeDetails = () => {
       } catch (error) {
         console.error("Error fetching tree data:", error);
       } finally {
-        setLoading(false);
+        setImageLoading(false);
       }
     };
     fetchTreeData();
@@ -118,7 +81,11 @@ const TreeDetails = () => {
           );
         } catch (error) {
           console.error("Error fetching donations:", error);
+        } finally {
+          setDonationLoading(false);
         }
+      } else {
+        setDonationLoading(false);
       }
     };
 
@@ -127,85 +94,112 @@ const TreeDetails = () => {
     }
   }, [showImage, tree]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-
   const handleTreeClick = () => {
     setShowImage(true);
   };
 
   return (
     <div className="w-full h-screen bg-blue-300 flex flex-col justify-center">
-      <Header className="fixed top-0 left-0 w-full z-10" />
+      <Header className="text-white fixed top-0 left-0 w-full z-10" />
+
       <div className="h-full w-full">
-        {tree && (
-          <div className="flex flex-col h-full">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-              className="absolute top-4 left-4 z-20 text-white text-xl font-bold"
-            ></motion.div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-              className="h-full w-full overflow-hidden"
-            >
-              <Canvas>
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[10, 4, 5]} intensity={1} />
-                <TreeModel onClick={handleTreeClick} />
-              </Canvas>
-            </motion.div>
-          </div>
-        )}
+        <div className="flex flex-col h-full">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="h-full w-full overflow-hidden"
+          >
+            {!showImage && (
+              <Link
+                className="text-blue-100 fixed top-1/2 ml-8 z-20 text-4xl hover:text-white hover:scale-110 transition"
+                href="/explore"
+              >
+                &larr; RETURN
+              </Link>
+            )}
+            <TreeScene handleTreeClick={handleTreeClick} />
+          </motion.div>
+        </div>
         {showImage && tree && (
           <div
             onClick={() => setShowImage(false)}
-            className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black bg-opacity-50"
+            className="absolute overflow-hidden top-0 left-0 w-full h-full flex items-center justify-center z-2 bg-black bg-opacity-50"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, originY: -1 }}
+              animate={{ opacity: 1, originY: 0 }}
               transition={{ duration: 0.8 }}
-              className="flex flex-col"
+              className="absolute inset-0 justify-center items-center flex flex-row gap-4"
             >
-              <div className="bg-white shadow-black shadow-md w-72 p-4 pb-10 flex flex-col align-center justify-center">
-                <img
-                  src={tree.imageId}
-                  alt="Tree Image"
-                  className="max-w-[100%] max-h-[100%] m-auto rounded-sm"
-                />
-                <h2 className="m-auto mt-2 font-bold">{userName}</h2>
-                <p className="m-auto mt-2">{tree.caption}</p>
-                <h3 className="m-auto mt-2">{formatDate(tree.timePlanted)}</h3>
-              </div>
-              <Link
-                href={`/donate/${treeId}`}
-                className="mt-2 px-4 py-2 bg-green-500 m-auto text-white rounded hover:bg-green-700 transition duration-300"
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white shadow-black shadow-md w-72 p-4 h-[60%] flex flex-col align-center justify-center"
               >
-                Support a tree-planting cause
-              </Link>
-              <div className="mt-6 p-4 bg-white rounded-md overflow-y-auto">
-                <h3 className="m-auto text-center font-bold text-lg mb-2">
-                  Donations
-                </h3>
-                {donations.map((donation, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-gray-300 pb-2 mb-2"
+                {imageLoading ? (
+                  <p>Loading...</p>
+                ) : (
+                  <>
+                    <img
+                      src={tree.imageId}
+                      alt="Tree Image"
+                      className="max-w-[100%] max-h-[100%] mx-auto p-2 rounded-sm"
+                    />
+                    <div className="flex text-sm flex-col h-full">
+                      <h2 className="mx-auto mt-2 font-bold">{userName}</h2>
+                      {tree.caption ? (
+                        <p className="mx-auto mt-2">{tree.caption}</p>
+                      ) : (
+                        <p className="mx-auto mt-2 text-gray-500">
+                          No caption provided.
+                        </p>
+                      )}
+                      <h3 className="mx-auto mt-auto text-gray-400 mb-0">
+                        {formatDate(tree.timePlanted)}
+                      </h3>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="p-4 h-[60%] w-72 bg-gray-100 flex flex-col"
+              >
+                <div className="h-full flex flex-col">
+                  <h3 className="m-auto mt-0 text-center font-bold text-lg mb-2">
+                    Donations
+                  </h3>
+                  {donationLoading ? (
+                    <p>Loading</p>
+                  ) : donations.length === 0 ? (
+                    <div className="flex flex-col h-full my-auto text-center">
+                      <p className="mt-auto">No donations found.</p>
+                      <p className="mb-auto">Be the first!</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-y-auto">
+                      {donations.map((donation, index) => (
+                        <div
+                          key={index}
+                          className="border-b border-gray-300 pb-2 mb-2"
+                        >
+                          <p className="font-bold">{donation.donorName}</p>
+                          <p>${donation.amount.toFixed(2)}</p>
+                          <p>{donation.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-row ">
+                  <p className="mt-auto">Inspired?</p>
+                  <Link
+                    className="px-2 py-0.5 rounded-md border border-black mb-0 mt-auto mr-2 ml-auto"
+                    href={`/donate/${treeId}`}
                   >
-                    <p className="font-bold">{donation.donorName}</p>
-                    <p>${donation.amount.toFixed(2)}</p>
-                    <p>{donation.message}</p>
-                  </div>
-                ))}
+                    Donate
+                  </Link>
+                </div>
               </div>
             </motion.div>
           </div>

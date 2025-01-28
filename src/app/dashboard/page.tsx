@@ -42,7 +42,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col relative min-h-screen w-full bg-green-100 overflow-hidden">
-      <Header />
+      <Header className="text-black" />
 
       {/* Dashboard Content */}
       <div className="relative z-10 flex flex-col items-center justify-center p-6">
@@ -106,6 +106,22 @@ const Dashboard = () => {
             >
               Log Out
             </button>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-xl font-semibold text-gray-700">Your Trees</h3>
+            <ul className="list-disc list-inside">
+              {userData?.treeIds.map((treeId) => (
+                <li key={treeId}>
+                  <a
+                    href={`/explore/${treeId}`}
+                    className="text-blue-500 hover:underline"
+                  >
+                    #{treeId}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

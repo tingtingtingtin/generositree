@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import Header from "@/components/Header";
+import { useSearchParams } from "next/navigation";
 
 export default function Thanks() {
+  const params = useSearchParams();
+  const treeId = params.get("treeId");
+
   return (
     <div className="flex flex-col h-screen">
       <Header className="text-black" />
@@ -12,6 +18,14 @@ export default function Thanks() {
             We greatly appreciate your contributions!
           </p>
           <div className="flex flex-row justify-between mt-6 text-center">
+            {treeId && (
+              <Link
+                href={`/explore/${treeId}`}
+                className="text-blue-500 hover:underline"
+              >
+                See your donation!
+              </Link>
+            )}
             <Link href="/" className="text-blue-500 hover:underline">
               Return Home
             </Link>

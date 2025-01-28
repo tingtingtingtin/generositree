@@ -9,13 +9,14 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  getDoc,
 } from "firebase/firestore";
 import Header from "@/components/Header";
 
 const DonationPage = () => {
   const params = useParams();
   const router = useRouter();
-  const treeId = params.treeId;
+  const treeId = params.treeId as string;
 
   const [donationAmount, setDonationAmount] = useState<number>(0);
   const [name, setName] = useState<string>("");
@@ -28,12 +29,28 @@ const DonationPage = () => {
     setError(null);
 
     try {
-      // Validate donation amount
       if (donationAmount <= 0) {
         throw new Error("Donation amount must be greater than 0.");
       }
 
-      // Create a new donation object
+      if (donationAmount >= 1) {
+        const treePlantResponse = await fetch("/api/plantTree", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            treeCount: donationAmount,
+            user: isAnonymous ? "Anonymous" : name,
+          }),
+        });
+        const treePlantData = await treePlantResponse.json();
+        if (treePlantResponse.ok) {
+          console.log("Tree planted successfully!");
+        } else {
+          alert(`Error planting tree: ${treePlantData.error}`);
+          return;
+        }
+      }
+
       const donationData = {
         treeId,
         amount: donationAmount,
@@ -41,20 +58,17 @@ const DonationPage = () => {
         timestamp: new Date(),
       };
 
-      // Add to `donations` collection
       const donationRef = await addDoc(
         collection(db, "donations"),
         donationData
       );
 
-      // Update the tree's donations array
       const treeRef = doc(db, "trees", treeId);
       await updateDoc(treeRef, {
         donations: arrayUnion(donationRef.id),
       });
 
-      // Redirect back to the tree details page
-      router.push(`/thank-you`);
+      router.push(`/thank-you?treeId=${treeId}`);
     } catch (error: any) {
       console.error("Error processing donation:", error);
       setError(error.message);
