@@ -13,7 +13,6 @@ const Explore = () => {
   const [fade, setFade] = useState(false);
   const router = useRouter();
 
-  // Fetch trees collection from Firestore
   useEffect(() => {
     const fetchTrees = async () => {
       try {
@@ -48,7 +47,7 @@ const Explore = () => {
 
   return (
     <div className="flex flex-col h-screen bg-green-700 relative">
-      <Header />
+      <Header className="text-white bg-blue-300 shadow-lg shadow-blue-300" />
       {fade ? (
         <motion.div
           className="h-full w-full bg-blue-300"
@@ -71,6 +70,7 @@ const Explore = () => {
                   : { scale: 1 }
               }
               transition={{ duration: 1 }}
+              onClick={() => handleTreeClick(id)}
               style={{
                 position: "absolute",
                 top: `${randomY}%`,
@@ -81,7 +81,6 @@ const Explore = () => {
                 borderRadius: "50%",
                 cursor: "pointer",
               }}
-              onClick={() => handleTreeClick(id)}
             >
               <div
                 style={{
