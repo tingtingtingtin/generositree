@@ -10,19 +10,19 @@ import Link from "next/link";
 import TreeScene from "@/components/TreeScene";
 import { formatDate } from "@/utils/util";
 
-const NOW = new Date();
+interface Tree {
+  timePlanted: number;
+  imageId: string;
+  caption: string;
+  userId: string;
+  donations?: string[];
+}
 
 const TreeDetails = () => {
   const params = useParams();
-  const treeId = params.treeId;
+  const treeId = params.treeId as string;
 
-  const [tree, setTree] = useState<{
-    timePlanted: number;
-    imageId: string;
-    caption: string;
-    userId: string;
-    donations?: Array<string>;
-  } | null>(null);
+  const [tree, setTree] = useState<Tree | null>(null);
   const [userName, setUserName] = useState("");
   const [showImage, setShowImage] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -38,10 +38,9 @@ const TreeDetails = () => {
         const treeSnapshot = await getDoc(treeRef);
 
         if (treeSnapshot.exists()) {
-          const treeData = treeSnapshot.data();
+          const treeData = treeSnapshot.data() as Tree;
           setTree(treeData);
 
-          // Fetch user data
           const userRef = doc(db, "users", treeData.userId);
           const userSnapshot = await getDoc(userRef);
 
@@ -85,6 +84,8 @@ const TreeDetails = () => {
         } finally {
           setDonationLoading(false);
         }
+      } else {
+        setDonationLoading(false);
       }
     };
 
@@ -109,12 +110,14 @@ const TreeDetails = () => {
             transition={{ duration: 1 }}
             className="h-full w-full overflow-hidden"
           >
-            <Link
-              className="text-blue-100 fixed top-1/2 ml-8 z-40 text-4xl hover:text-white hover:scale-110 transition"
-              href="/explore"
-            >
-              &larr; RETURN
-            </Link>
+            {!showImage && (
+              <Link
+                className="text-blue-100 fixed top-1/2 ml-8 z-20 text-4xl hover:text-white hover:scale-110 transition"
+                href="/explore"
+              >
+                &larr; RETURN
+              </Link>
+            )}
             <TreeScene handleTreeClick={handleTreeClick} />
           </motion.div>
         </div>
@@ -142,10 +145,16 @@ const TreeDetails = () => {
                       alt="Tree Image"
                       className="max-w-[100%] max-h-[100%] mx-auto p-2 rounded-sm"
                     />
-                    <div className="flex text-sm flex-col">
-                      <h2 className="m-auto mt-2 font-bold">{userName}</h2>
-                      <p className="m-auto mt-2">{tree.caption}</p>
-                      <h3 className="text-gray-400 mt-2">
+                    <div className="flex text-sm flex-col h-full">
+                      <h2 className="mx-auto mt-2 font-bold">{userName}</h2>
+                      {tree.caption ? (
+                        <p className="mx-auto mt-2">{tree.caption}</p>
+                      ) : (
+                        <p className="mx-auto mt-2 text-gray-500">
+                          No caption provided.
+                        </p>
+                      )}
+                      <h3 className="mx-auto mt-auto text-gray-400 mb-0">
                         {formatDate(tree.timePlanted)}
                       </h3>
                     </div>
@@ -156,13 +165,18 @@ const TreeDetails = () => {
                 onClick={(e) => e.stopPropagation()}
                 className="p-4 h-[60%] w-72 bg-gray-100 flex flex-col"
               >
-                {donationLoading ? (
-                  <p>Loading</p>
-                ) : (
-                  <div className="h-full flex flex-col">
-                    <h3 className="m-auto mt-0 text-center font-bold text-lg mb-2">
-                      Donations
-                    </h3>
+                <div className="h-full flex flex-col">
+                  <h3 className="m-auto mt-0 text-center font-bold text-lg mb-2">
+                    Donations
+                  </h3>
+                  {donationLoading ? (
+                    <p>Loading</p>
+                  ) : donations.length === 0 ? (
+                    <div className="flex flex-col h-full my-auto text-center">
+                      <p className="mt-auto">No donations found.</p>
+                      <p className="mb-auto">Be the first!</p>
+                    </div>
+                  ) : (
                     <div className="overflow-y-auto">
                       {donations.map((donation, index) => (
                         <div
@@ -175,9 +189,8 @@ const TreeDetails = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
+                  )}
+                </div>
                 <div className="flex flex-row ">
                   <p className="mt-auto">Inspired?</p>
                   <Link

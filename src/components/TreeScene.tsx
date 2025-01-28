@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Canvas } from "@react-three/fiber";
 
 const TreeModel = ({ onClick }: { onClick: () => void }) => (

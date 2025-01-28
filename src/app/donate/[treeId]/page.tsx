@@ -15,7 +15,7 @@ import Header from "@/components/Header";
 const DonationPage = () => {
   const params = useParams();
   const router = useRouter();
-  const treeId = params.treeId;
+  const treeId = params.treeId as string;
 
   const [donationAmount, setDonationAmount] = useState<number>(0);
   const [name, setName] = useState<string>("");
@@ -28,12 +28,10 @@ const DonationPage = () => {
     setError(null);
 
     try {
-      // Validate donation amount
       if (donationAmount <= 0) {
         throw new Error("Donation amount must be greater than 0.");
       }
 
-      // Create a new donation object
       const donationData = {
         treeId,
         amount: donationAmount,
@@ -41,19 +39,16 @@ const DonationPage = () => {
         timestamp: new Date(),
       };
 
-      // Add to `donations` collection
       const donationRef = await addDoc(
         collection(db, "donations"),
         donationData
       );
 
-      // Update the tree's donations array
       const treeRef = doc(db, "trees", treeId);
       await updateDoc(treeRef, {
         donations: arrayUnion(donationRef.id),
       });
 
-      // Redirect back to the tree details page
       router.push(`/thank-you`);
     } catch (error: any) {
       console.error("Error processing donation:", error);

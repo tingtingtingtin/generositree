@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Header({ className }: { className: string }) {
+export default function Header({ className }: { className?: string }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 

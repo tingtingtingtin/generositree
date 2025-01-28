@@ -11,12 +11,15 @@ export default function TreePlantingForm() {
   const [page, setPage] = useState(1); // Tracks the current page
   const [photo, setPhoto] = useState<File | null>(null);
   const [caption, setCaption] = useState("");
-  const [donation, setDonation] = useState("");
+  const [donation, setDonation] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
+    const userAttempt = localStorage.getItem("userId");
+    if (!userAttempt) {
       router.push("/login");
+    } else {
+      setUserId(userAttempt);
     }
   });
 
@@ -32,40 +35,63 @@ export default function TreePlantingForm() {
   const handleSubmit = async () => {
     try {
       if (!photo) throw new Error("No photo somehow");
-      // Step 1: Upload the photo to Firebase Storage
+      if (donation >= 1) {
+        const treePlantResponse = await fetch("/api/plantTree", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            treeCount: donation,
+            user: userId,
+          }),
+        });
+        const treePlantData = await treePlantResponse.json();
+        if (treePlantResponse.ok) {
+          console.log("Tree planted successfully!");
+        } else {
+          alert(`Error planting tree: ${treePlantData.error}`);
+          return;
+        }
+      }
+
       const storageRef = ref(storage, `images/${photo.name}`);
       const uploadTask = uploadBytesResumable(storageRef, photo);
 
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // You can track progress here
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% done`);
+          const progressBar = document.getElementById("uploadProgressBar");
+          if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+          }
         },
         (error) => {
           console.error("Error uploading image:", error);
         },
         async () => {
-          // Step 2: Get the download URL after the upload is complete
           const photoURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-          // Step 3: Add the new tree document to the trees collection
-          const newTreeRef = doc(db, "trees", `${Date.now()}`); // You can use timestamp or other unique IDs
+          const newTreeRef = doc(db, "trees", `${Date.now()}`);
           const treeData = {
             timePlanted: new Date(),
             imageId: photoURL,
             caption,
-            userId: userId, // Replace with actual user ID
+            userId: userId,
           };
           await setDoc(newTreeRef, treeData);
 
-          // Step 4: Update the user's document to include the treeId
-          const userRef = doc(db, "users", userId); // Replace with actual user ID
-          await updateDoc(userRef, {
-            treeIds: arrayUnion(newTreeRef.id),
-          });
+          if (userId) {
+            const userRef = doc(db, "users", userId);
+            await updateDoc(userRef, {
+              treeIds: arrayUnion(newTreeRef.id),
+            });
+          } else {
+            throw new Error("User ID is null");
+          }
 
-          // Step 5: Redirect or show success message
-          router.push("/success"); // Or any other route
+          router.push(`/success?treeId=${newTreeRef.id}`);
         }
       );
     } catch (error) {
@@ -136,16 +162,21 @@ export default function TreePlantingForm() {
               <h1 className="mb-4 text-2xl font-bold text-gray-800">
                 Donation Amount
               </h1>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <p>
                 You don&apos;t have to donate to plant a virtual tree, but your
-                contribution is appreciated!
+                contribution is appreciated!{" "}
+                <strong>Every $1 is one real tree!</strong>
+              </p>
+              <label className="mt-2 mb-2 block text-sm font-medium text-gray-700">
+                USD
               </label>
               <input
                 type="number"
                 value={donation}
-                onChange={(e) => setDonation(e.target.value)}
+                min={0}
+                onChange={(e) => setDonation(e.target.valueAsNumber)}
                 placeholder="Get it started!"
-                className="mb-4 w-full rounded border p-2 text-sm"
+                className="mb-4 w-1/2 rounded border p-2 text-sm"
               />
             </motion.div>
           )}
