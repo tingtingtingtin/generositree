@@ -107,6 +107,22 @@ const Dashboard = () => {
               Log Out
             </button>
           </div>
+
+          <div className="mt-4">
+            <h3 className="text-xl font-semibold text-gray-700">Your Trees</h3>
+            <ul className="list-disc list-inside">
+              {userData?.treeIds.map((treeId) => (
+                <li key={treeId}>
+                  <a
+                    href={`/explore/${treeId}`}
+                    className="text-blue-500 hover:underline"
+                  >
+                    #{treeId}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

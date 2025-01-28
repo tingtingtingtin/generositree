@@ -101,12 +101,6 @@ const TreeDetails = () => {
     <div className="w-full h-screen bg-blue-300 flex flex-col justify-center">
       <Header className="text-white fixed top-0 left-0 w-full z-10" />
 
-      <Link
-        className="text-blue-100 fixed ml-8 z-40 text-4xl hover:text-white hover:scale-110 transition"
-        href="/explore"
-      >
-        &larr; RETURN
-      </Link>
       <div className="h-full w-full">
         <div className="flex flex-col h-full">
           <motion.div
@@ -115,6 +109,12 @@ const TreeDetails = () => {
             transition={{ duration: 1 }}
             className="h-full w-full overflow-hidden"
           >
+            <Link
+              className="text-blue-100 fixed top-1/2 ml-8 z-40 text-4xl hover:text-white hover:scale-110 transition"
+              href="/explore"
+            >
+              &larr; RETURN
+            </Link>
             <TreeScene handleTreeClick={handleTreeClick} />
           </motion.div>
         </div>
