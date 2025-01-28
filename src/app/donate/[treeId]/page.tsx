@@ -9,6 +9,7 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  getDoc,
 } from "firebase/firestore";
 import Header from "@/components/Header";
 
@@ -32,6 +33,24 @@ const DonationPage = () => {
         throw new Error("Donation amount must be greater than 0.");
       }
 
+      if (donationAmount >= 1) {
+        const treePlantResponse = await fetch("/api/plantTree", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            treeCount: donationAmount,
+            user: isAnonymous ? "Anonymous" : name,
+          }),
+        });
+        const treePlantData = await treePlantResponse.json();
+        if (treePlantResponse.ok) {
+          console.log("Tree planted successfully!");
+        } else {
+          alert(`Error planting tree: ${treePlantData.error}`);
+          return;
+        }
+      }
+
       const donationData = {
         treeId,
         amount: donationAmount,
@@ -49,7 +68,7 @@ const DonationPage = () => {
         donations: arrayUnion(donationRef.id),
       });
 
-      router.push(`/thank-you`);
+      router.push(`/thank-you?treeId=${treeId}`);
     } catch (error: any) {
       console.error("Error processing donation:", error);
       setError(error.message);
