@@ -29,5 +29,5 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/profile"], // Set your protected routes here
+  matcher: ["/dashboard", "/plant"], // Set your protected routes here
 };
