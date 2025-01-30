@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { db } from "@/utils/firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
 import Header from "@/components/Header";
 
 const SignupPage: React.FC = () => {
@@ -23,7 +21,7 @@ const SignupPage: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       if (!response.ok) {
@@ -32,13 +30,6 @@ const SignupPage: React.FC = () => {
       }
 
       const data = await response.json();
-      const userId = data.user.uid;
-      const emailId = data.user.email as string;
-      await setDoc(doc(collection(db, "users"), userId), {
-        name: name,
-        email: emailId,
-        treeIds: [],
-      });
       console.log(data.message);
       setEmail("");
       setPassword("");
