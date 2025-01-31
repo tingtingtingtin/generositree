@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "GenerosiTree",
-  description: "Sustainability Goal for Rosehack 2025",
+  description: "Your sustainable social network",
 };
 
 export default function RootLayout({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { collection, getDocs } from "firebase/firestore";
@@ -9,7 +9,6 @@ import Header from "@/components/Header";
 
 const Explore = () => {
   const [trees, setTrees] = useState<{ [key: string]: any }>({});
-  const [activeTree, setActiveTree] = useState<string | null>(null);
   const [fade, setFade] = useState(false);
   const router = useRouter();
 
@@ -30,73 +29,63 @@ const Explore = () => {
     fetchTrees();
   }, []);
 
-  const handleTreeClick = (id: string) => {
-    setActiveTree(id);
-    setTrees(
-      Object.fromEntries(
-        Object.entries(trees).filter(([treeId]) => treeId === id)
-      )
-    );
-    setTimeout(() => {
-      setFade(true);
-    }, 500);
-    setTimeout(() => {
-      router.push(`/explore/${id}`);
-    }, 700);
-  };
+  const memoizedTrees = useMemo(() => {
+    return Object.entries(trees).map(([id, tree]) => {
+      const randomX = 20 + Math.random() * 60;
+      const randomY = 20 + Math.random() * 60;
+      const handleTreeClick = (id: string) => {
+        // setTrees([]);
+        setFade(true);
+        setTimeout(() => {
+          router.push(`/explore/${id}`);
+        }, 500);
+      };
+      return (
+        <motion.div
+          key={id}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+          onClick={() => handleTreeClick(id)}
+          className="z-2"
+          style={{
+            position: "absolute",
+            top: `${randomY}%`,
+            left: `${randomX}%`,
+            width: "40px",
+            height: "40px",
+            backgroundColor: "#003300",
+            borderRadius: "50%",
+            cursor: "pointer",
+          }}
+        >
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              backgroundColor: "#005e00",
+              borderRadius: "50%",
+              margin: "auto",
+              position: "relative",
+              top: "10px",
+            }}
+          />
+        </motion.div>
+      );
+    });
+  }, [trees, router]);
 
   return (
-    <div className="flex flex-col h-screen bg-green-700 relative">
-      <Header className="text-white bg-blue-300 shadow-lg shadow-blue-300" />
-      {fade ? (
-        <motion.div
-          className="h-full w-full bg-blue-300"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        />
-      ) : (
-        Object.entries(trees).map(([id, tree]) => {
-          const randomX = 20 + Math.random() * 60;
-          const randomY = 20 + Math.random() * 60;
-
-          return (
-            <motion.div
-              key={id}
-              initial={{ scale: 1 }}
-              animate={
-                activeTree === id
-                  ? { scale: 10, zIndex: 100, top: "50%", left: "50%" }
-                  : { scale: 1 }
-              }
-              transition={{ duration: 1 }}
-              onClick={() => handleTreeClick(id)}
-              style={{
-                position: "absolute",
-                top: `${randomY}%`,
-                left: `${randomX}%`,
-                width: "40px",
-                height: "40px",
-                backgroundColor: "#003300",
-                borderRadius: "50%",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  backgroundColor: "#005e00",
-                  borderRadius: "50%",
-                  margin: "auto",
-                  position: "relative",
-                  top: "10px",
-                }}
-              />
-            </motion.div>
-          );
-        })
-      )}
+    <div className="flex flex-col h-screen bg-blue-300 relative overflow-hidden">
+      <Header className="text-white bg-blue-300 shadow-blue-300 " />
+      <motion.div
+        initial={{ y: fade ? 0 : "100vh" }}
+        animate={{ y: fade ? "100vh" : 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex-1 relative bg-green-700"
+      >
+        {memoizedTrees}
+      </motion.div>
     </div>
   );
 };

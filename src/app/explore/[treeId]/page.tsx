@@ -9,6 +9,7 @@ import Header from "@/components/Header";
 import Link from "next/link";
 import TreeScene from "@/components/TreeScene";
 import { formatDate } from "@/utils/util";
+import { useRouter } from "next/navigation";
 
 interface Tree {
   timePlanted: number;
@@ -21,6 +22,7 @@ interface Tree {
 const TreeDetails = () => {
   const params = useParams();
   const treeId = params.treeId as string;
+  const router = useRouter();
 
   const [tree, setTree] = useState<Tree | null>(null);
   const [userName, setUserName] = useState("");
@@ -30,6 +32,7 @@ const TreeDetails = () => {
   const [donations, setDonations] = useState<
     { amount: number; donorName: string; message: string }[]
   >([]);
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     const fetchTreeData = async () => {
@@ -98,25 +101,32 @@ const TreeDetails = () => {
     setShowImage(true);
   };
 
+  const onReturn = () => {
+    setLeaving(true);
+    setTimeout(() => {
+      router.push("/explore");
+    }, 1000);
+  };
+
   return (
     <div className="w-full h-screen bg-blue-300 flex flex-col justify-center">
       <Header className="text-white fixed top-0 left-0 w-full z-10" />
 
       <div className="h-full w-full">
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ y: "80vh" }}
+            animate={{ y: leaving ? "80vh" : "0vh" }}
             transition={{ duration: 1 }}
             className="h-full w-full overflow-hidden"
           >
-            {!showImage && (
-              <Link
-                className="text-blue-100 fixed top-1/2 ml-8 z-20 text-4xl hover:text-white hover:scale-110 transition"
-                href="/explore"
+            {!showImage && !leaving && (
+              <div
+                onClick={onReturn}
+                className="text-blue-100 fixed top-1/2 ml-8 z-20 text-4xl hover:text-white hover:scale-110 transition cursor-pointer"
               >
                 &larr; RETURN
-              </Link>
+              </div>
             )}
             <TreeScene handleTreeClick={handleTreeClick} />
           </motion.div>
@@ -129,6 +139,7 @@ const TreeDetails = () => {
             <motion.div
               initial={{ opacity: 0, originY: -1 }}
               animate={{ opacity: 1, originY: 0 }}
+              exit={{ opacity: 0, originY: -1 }}
               transition={{ duration: 0.8 }}
               className="absolute inset-0 justify-center items-center flex flex-row gap-4"
             >

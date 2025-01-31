@@ -62,7 +62,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col relative min-h-screen w-full bg-green-100 overflow-hidden">
-      <Header className="text-black" />
+      <Header className="text-black bg-white" />
 
       {/* Dashboard Content */}
       <div className="relative z-10 flex flex-col items-center justify-center p-6">
