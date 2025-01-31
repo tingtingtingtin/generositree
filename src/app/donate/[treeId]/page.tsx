@@ -9,7 +9,6 @@ import {
   doc,
   updateDoc,
   arrayUnion,
-  getDoc,
 } from "firebase/firestore";
 import Header from "@/components/Header";
 

@@ -1,18 +1,35 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Header({ className }: { className?: string }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      setIsAuthenticated(true);
-    }
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch("/api/auth", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user ID");
+        }
+
+        const data = await response.json();
+        setUserId(data.userId);
+      } catch (error) {
+        setUserId(null);
+      }
+    };
+
+    fetchUserId();
   }, []);
 
   return (
@@ -37,7 +54,7 @@ export default function Header({ className }: { className?: string }) {
           Plant a Tree
         </Link>
 
-        {isAuthenticated ? (
+        {userId ? (
           <>
             <button
               onClick={async () => {
@@ -55,9 +72,7 @@ export default function Header({ className }: { className?: string }) {
                   }
 
                   console.log("Logged out successfully");
-                  // localStorage.removeItem("userId");
                   router.push("/");
-                  // Redirect to login page or home page after successful logout
                 } catch (error: any) {
                   console.error("Logout failed:", error.message);
                 }

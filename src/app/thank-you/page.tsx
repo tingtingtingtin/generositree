@@ -1,10 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { useSearchParams } from "next/navigation";
 
-export default function Thanks() {
+const Thanks = () => {
   const params = useSearchParams();
   const treeId = params.get("treeId");
 
@@ -33,5 +34,13 @@ export default function Thanks() {
         </div>
       </div>
     </div>
+  );
+};
+
+export default function SuspendedThanks() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Thanks />
+    </Suspense>
   );
 }

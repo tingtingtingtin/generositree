@@ -14,13 +14,30 @@ export default function TreePlantingForm() {
   const [donation, setDonation] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
+
   useEffect(() => {
-    const userAttempt = localStorage.getItem("userId");
-    if (!userAttempt) {
-      router.push("/login");
-    } else {
-      setUserId(userAttempt);
-    }
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch("/api/auth", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user ID");
+        }
+
+        const data = await response.json();
+        setUserId(data.userId);
+      } catch (error) {
+        setUserId(null);
+        router.push("/login");
+      }
+    };
+
+    fetchUserId();
   });
 
   const handleNext = () => setPage((prev) => prev + 1);
@@ -126,7 +143,7 @@ export default function TreePlantingForm() {
               transition={{ duration: 0.2 }}
             >
               <h1 className="mb-4 text-2xl font-bold text-gray-800">
-                Upload Photo
+                Upload Photo {userId}
               </h1>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Show yourself contributing to the preservation and protection of

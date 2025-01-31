@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/utils/firebase"; // Make sure to configure Firebase in this file
+import { db } from "@/utils/firebase";
 
 interface UserData {
   name: string;
@@ -24,21 +24,41 @@ const fetchUserData = async (userId: string): Promise<UserData | null> => {
 };
 
 const Dashboard = () => {
-  const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const router = useRouter();
+
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      fetchUserData(userId).then((fetchedUserData) => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("/api/auth", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error);
+        }
+
+        const data = await response.json();
+        const fetchedUserData = await fetchUserData(data.userId);
+
         if (fetchedUserData) {
           setUserData(fetchedUserData);
+        } else {
+          throw new Error("Failed to fetch user data");
         }
-      });
-    } else {
-      console.log("No user ID found in local storage");
-      router.push("/login");
-    }
-  }, []);
+      } catch (error: any) {
+        setUserData(null);
+        console.error("Failed to fetch user:", error.message);
+        router.push("/login");
+      }
+    };
+
+    fetchUser();
+  });
 
   return (
     <div className="flex flex-col relative min-h-screen w-full bg-green-100 overflow-hidden">
@@ -95,9 +115,7 @@ const Dashboard = () => {
                   }
 
                   console.log("Logged out successfully");
-                  // localStorage.removeItem("userId");
                   router.push("/");
-                  // Redirect to login page or home page after successful logout
                 } catch (error: any) {
                   console.error("Logout failed:", error.message);
                 }
