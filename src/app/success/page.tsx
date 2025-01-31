@@ -1,14 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { useSearchParams } from "next/navigation";
 
-interface SuccessProps {
-  treeId: string;
-}
-
-export default function Success() {
+const Success = () => {
   const params = useSearchParams();
   const treeId = params.get("treeId");
   if (!treeId) {
@@ -47,5 +44,13 @@ export default function Success() {
         </div>
       </div>
     </div>
+  );
+};
+
+export default function SuspendedSuccess() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Success />
+    </Suspense>
   );
 }

@@ -38,7 +38,7 @@ export default function TreePlantingForm() {
     };
 
     fetchUserId();
-  }, []);
+  });
 
   const handleNext = () => setPage((prev) => prev + 1);
   const handleBack = () => setPage((prev) => prev - 1);

@@ -58,7 +58,7 @@ const Dashboard = () => {
     };
 
     fetchUser();
-  }, []);
+  });
 
   return (
     <div className="flex flex-col relative min-h-screen w-full bg-green-100 overflow-hidden">
