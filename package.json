@@ -13,10 +13,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@react-three/drei": "^9.121.3",
     "@react-three/fiber": "^8.17.12",
     "@types/three": "^0.172.0",
-    "axios": "^1.7.9",
     "cookie": "^1.0.2",
     "digital-humani-js-sdk": "^1.0.0",
     "firebase": "^11.2.0",
@@ -25,7 +23,6 @@
     "next": "^14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.10.1",
     "three": "^0.172.0"
   },
   "devDependencies": {
