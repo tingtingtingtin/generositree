@@ -8,7 +8,10 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  const response = await fetch(process.env.VERCEL_URL + "/api/auth", {
+  const url = new URL(req.url);
+  const apiUrl = `${url.protocol}//${url.host}/api/auth`;
+  console.log("API URL:", apiUrl);
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
