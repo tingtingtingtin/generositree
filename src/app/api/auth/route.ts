@@ -29,3 +29,35 @@ export async function POST(request: Request): Promise<Response> {
     });
   }
 }
+
+export async function GET(request: Request): Promise<Response> {
+  try {
+    const token = request.headers
+      .get("cookie")
+      ?.split("; ")
+      .find((c) => c.startsWith("token="))
+      ?.split("=")[1];
+
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Token not found" }), {
+        status: 400,
+      });
+    }
+
+    const user = await admin.auth().verifyIdToken(token);
+
+    const response = {
+      message: "User verified",
+      userId: user.uid,
+    };
+
+    return new Response(JSON.stringify(response), {
+      status: 200,
+    });
+  } catch (error: any) {
+    console.error("Error: ", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 400,
+    });
+  }
+}

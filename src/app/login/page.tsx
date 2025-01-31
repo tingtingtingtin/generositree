@@ -28,8 +28,6 @@ const LoginPage: React.FC = () => {
         throw new Error(errorData.error);
       }
       const data = await response.json();
-      const userId = data.user.uid;
-      localStorage.setItem("userId", userId);
       console.log(data.message);
       router.push("/dashboard");
     } catch (error: any) {

@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
-  console.log("a: ");
+
   const response = await fetch(process.env.URL + "/api/auth", {
     method: "POST",
     headers: {
@@ -21,7 +21,6 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    console.log("c: ");
     return NextResponse.next();
   } catch (error) {
     return NextResponse.redirect(new URL("/login", req.url));

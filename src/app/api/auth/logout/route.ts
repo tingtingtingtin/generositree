@@ -1,11 +1,10 @@
 import { serialize } from "cookie";
-import { signOut } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import type { ErrorResponse } from "@/app/types";
 
 export async function POST() {
   try {
-    await signOut(auth);
+    await auth.signOut();
 
     const cookie = serialize("token", "", {
       httpOnly: true,
