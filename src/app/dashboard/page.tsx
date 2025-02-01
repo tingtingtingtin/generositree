@@ -56,7 +56,7 @@ const Dashboard = () => {
         router.push("/login");
       }
     };
-
+    router.prefetch("/plant");
     fetchUser();
   }, []);
 
