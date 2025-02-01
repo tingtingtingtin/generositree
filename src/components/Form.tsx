@@ -143,7 +143,7 @@ export default function TreePlantingForm() {
               transition={{ duration: 0.2 }}
             >
               <h1 className="mb-4 text-2xl font-bold text-gray-800">
-                Upload Photo {userId}
+                Upload Photo
               </h1>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Show yourself contributing to the preservation and protection of
