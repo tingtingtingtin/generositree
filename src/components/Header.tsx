@@ -73,6 +73,7 @@ export default function Header({ className }: { className?: string }) {
 
                   console.log("Logged out successfully");
                   router.push("/");
+                  router.refresh();
                 } catch (error: any) {
                   console.error("Logout failed:", error.message);
                 }

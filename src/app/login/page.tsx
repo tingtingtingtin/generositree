@@ -29,6 +29,7 @@ const LoginPage: React.FC = () => {
       }
       const data = await response.json();
       console.log(data.message);
+      router.prefetch("/dashboard");
       router.push("/dashboard");
     } catch (error: any) {
       setError(error.message);
