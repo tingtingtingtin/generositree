@@ -18,9 +18,10 @@ export const formatDate = (
   const hoursAgo = Math.floor(minutesAgo / 60);
   if (hoursAgo < 24) return `${hoursAgo} hr ago`;
   const daysAgo = Math.floor(hoursAgo / 24);
-  if (daysAgo < 30) return `${daysAgo} days ago`;
+  if (daysAgo < 30) return `${daysAgo} day${daysAgo === 1 ? "" : "s"} ago`;
   const monthsAgo = Math.floor(daysAgo / 30);
-  if (monthsAgo < 12) return `${monthsAgo} months ago`;
+  if (monthsAgo < 12)
+    return `${monthsAgo} month${monthsAgo === 1 ? "" : "s"} ago`;
   const yearsAgo = Math.floor(monthsAgo / 12);
   return `${yearsAgo} years ago`;
 };
