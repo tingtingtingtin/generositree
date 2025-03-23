@@ -176,7 +176,7 @@ const TreeDetails = () => {
                 onClick={(e) => e.stopPropagation()}
                 className="p-4 h-[60%] w-72 bg-gray-100 flex flex-col"
               >
-                <div className="h-full flex flex-col">
+                <div className="h-[90%] flex flex-col">
                   <h3 className="m-auto mt-0 text-center font-bold text-lg mb-2">
                     Donations
                   </h3>
@@ -188,13 +188,15 @@ const TreeDetails = () => {
                       <p className="mb-auto">Be the first!</p>
                     </div>
                   ) : (
-                    <div className="overflow-y-auto">
+                    <div className="overflow-y-auto px-2">
                       {donations.map((donation, index) => (
                         <div
                           key={index}
                           className="border-b border-gray-300 pb-2 mb-2"
                         >
-                          <p className="font-bold">{donation.donorName}</p>
+                          <p className="font-bold truncate">
+                            {donation.donorName}
+                          </p>
                           <p>${donation.amount.toFixed(2)}</p>
                           <p>{donation.message}</p>
                         </div>
@@ -202,7 +204,7 @@ const TreeDetails = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex flex-row ">
+                <div className="flex flex-row pt-2">
                   <p className="mt-auto">Inspired?</p>
                   <Link
                     className="px-2 py-0.5 rounded-md border border-black mb-0 mt-auto mr-2 ml-auto"
